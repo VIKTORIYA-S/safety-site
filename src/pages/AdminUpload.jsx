@@ -1,5 +1,15 @@
-import { useState } from "react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { db } from "../firebase";
 
 // Замените на свои значения из Cloudinary (Dashboard → Settings → Upload)
@@ -31,6 +41,13 @@ const FILE_TYPES = [
   { value: "link", label: "Посилання (YouTube / зовнішній сайт)", needsFile: false },
 ];
 
+const TYPE_ICONS = {
+  image: "🖼️",
+  pdf: "📄",
+  video: "▶️",
+  link: "🔗",
+};
+
 async function uploadToCloudinary(file) {
   const formData = new FormData();
   formData.append("file", file);
@@ -60,8 +77,47 @@ function AdminUpload() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
 
+  const [materials, setMaterials] = useState([]);
+  const [loadingList, setLoadingList] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
+
   const sectionInfo = SECTIONS.find((s) => s.value === section);
   const typeInfo = FILE_TYPES.find((t) => t.value === fileType);
+
+  async function fetchMaterials() {
+    setLoadingList(true);
+    const constraints = [where("section", "==", section)];
+    if (sectionInfo.hasSubpages) {
+      constraints.push(where("subpage", "==", subpage));
+    }
+    constraints.push(orderBy("createdAt", "desc"));
+
+    const q = query(collection(db, "materials"), ...constraints);
+    const snapshot = await getDocs(q);
+    setMaterials(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
+    setLoadingList(false);
+  }
+
+  useEffect(() => {
+    fetchMaterials();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section, subpage]);
+
+  async function handleDelete(id) {
+    if (!window.confirm("Видалити цей матеріал? Дію не можна скасувати.")) {
+      return;
+    }
+    setDeletingId(id);
+    try {
+      await deleteDoc(doc(db, "materials", id));
+      setMaterials((prev) => prev.filter((m) => m.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Помилка видалення: " + err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -97,6 +153,8 @@ function AdminUpload() {
       setThumbnailUrl("");
       setText("");
       e.target.reset();
+
+      fetchMaterials();
     } catch (err) {
       console.error(err);
       setMessage("❌ Помилка: " + err.message);
@@ -184,6 +242,37 @@ function AdminUpload() {
       </form>
 
       {message && <p>{message}</p>}
+
+      <hr />
+
+      <h3>
+        Матеріали розділу «{sectionInfo.label}
+        {sectionInfo.hasSubpages
+          ? ` → ${SUBPAGES.find((s) => s.value === subpage)?.label}`
+          : ""}
+        »
+      </h3>
+
+      {loadingList ? (
+        <p>Завантаження списку...</p>
+      ) : materials.length === 0 ? (
+        <p>Матеріалів поки немає.</p>
+      ) : (
+        <ul className="admin-materials-list">
+          {materials.map((m) => (
+            <li key={m.id} className="admin-materials-item">
+              <span>{TYPE_ICONS[m.fileType] || "📁"}</span>
+              <span>{m.text || "(без підпису)"}</span>
+              <button
+                onClick={() => handleDelete(m.id)}
+                disabled={deletingId === m.id}
+              >
+                {deletingId === m.id ? "Видалення..." : "Видалити"}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

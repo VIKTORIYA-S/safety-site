@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-// Простой пароль для доступа к админ-панели.
-// Секретность не критична — это просто барьер от случайных посетителей.
 const ADMIN_PASSWORD = "dnz160";
 
 function AdminGate({ children }) {
@@ -26,18 +24,22 @@ function AdminGate({ children }) {
   }
 
   return (
-    <div className="admin-gate">
-      <form onSubmit={handleSubmit}>
-        <h2>Введіть пароль</h2>
-        <input
-          type="password"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          autoFocus
-        />
-        <button type="submit">Увійти</button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </form>
+    <div className="modal">
+      <div className="modal__block">
+        <h2 className="modal__title">Введіть пароль</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            className="input"
+            type="password"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            autoFocus
+          />
+          <br />
+          <button className="modal__button" type="submit">Увійти</button>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+        </form>
+      </div>
     </div>
   );
 }
