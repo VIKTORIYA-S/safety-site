@@ -8,6 +8,7 @@ import Section from "./pages/Section";
 import Materials from "./pages/Materials";
 import AdminUpload from "./pages/AdminUpload";
 import AdminGate from "./components/AdminGate";
+import Footer from "./components/Footer";
 
 
 const sections = [
@@ -31,8 +32,7 @@ function App() {
         <Route path="/admin" element={<AdminGate> <AdminUpload /></AdminGate>}/>
 
         {sections.map(({ path, title }) => (
-          <Route key={path} path={path} element={<Section title={title} />}>
-            <Route path="teachers" element={<Materials section={path} subpage="teachers" />} />
+          <Route key={path} path={path} element={<Section title={title} sectionKey={path} />}>            <Route path="teachers" element={<Materials section={path} subpage="teachers" />} />
             <Route path="parents" element={<Materials section={path} subpage="parents" />} />
             <Route path="kids" element={<Materials section={path} subpage="kids" />} />
           </Route>
@@ -40,6 +40,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      <Footer />
     </Router>
   );
 }

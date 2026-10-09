@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-import Carousel from "../components/Carousel";
+import MaterialCard from "../components/MaterialCard";
 
 function Materials({ section, subpage }) {
   const [items, setItems] = useState([]);
@@ -23,29 +23,12 @@ function Materials({ section, subpage }) {
   }, [section, subpage]);
 
   if (loading) return <p>Завантаження...</p>;
-
-  // Группируем материалы по типу файла — отдельная карусель на каждый тип
-  const grouped = items.reduce((acc, item) => {
-    acc[item.fileType] = acc[item.fileType] || [];
-    acc[item.fileType].push(item);
-    return acc;
-  }, {});
-
-  const typeLabels = {
-    image: "Інтерактивні ігри",
-    pdf: "Література",
-    video: "Відео",
-    link: "Корисні посилання",
-  };
-
-  const types = Object.keys(grouped);
-
-  if (types.length === 0) return <p>Матеріалів поки немає.</p>;
+  if (items.length === 0) return <p>Матеріалів поки немає.</p>;
 
   return (
-    <div>
-      {types.map((type) => (
-        <Carousel key={type} items={grouped[type]} title={typeLabels[type] || type} />
+    <div className="materials-grid">
+      {items.map((item) => (
+        <MaterialCard key={item.id} item={item} />
       ))}
     </div>
   );

@@ -53,45 +53,56 @@ function Feed({ section, subpage }) {
   if (loading) return <p>Завантаження...</p>;
   if (items.length === 0) return <p>Матеріалів поки немає.</p>;
 
-  return (
+    return (
     <div className="feed">
-      {items.map((item) => (
-        <div key={item.id} className="feed-item">
-          {item.fileType === "image" && <img src={item.fileUrl} alt={item.text} />}
-          {item.fileType === "pdf" && (
-            <a href={item.fileUrl} target="_blank" rel="noreferrer">📄 Завантажити документ</a>
-          )}
-          {item.fileType === "video" && (
+      {items.map((item) => {
+        if (item.fileType === "link") {
+          return (
             <a
-              className="video-card"
-              href={item.fileUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <img src={getVideoThumbnail(item.fileUrl)} alt={item.text} />
-              <span className="play-icon">▶️</span>
-            </a>
-          )}
-          {item.fileType === "link" && (
-            <a
-              className="link-card"
-              href={item.linkUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {getLinkThumbnail(item) && (
-                <img src={getLinkThumbnail(item)} alt={item.text} />
-              )}
-              {extractYouTubeId(item.linkUrl) ? (
+  key={item.id}
+  className="feed-item"
+  href={item.linkUrl}
+  target="_blank"
+  rel="noreferrer"
+>
+  <svg
+    className="feed-item__clip"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+  </svg>
+  <p>{item.text}</p>
+</a>
+          );
+        }
+
+        return (
+          <div key={item.id} className="feed-item">
+            {item.fileType === "image" && <img src={item.fileUrl} alt={item.text} />}
+            {item.fileType === "pdf" && (
+              <a href={item.fileUrl} target="_blank" rel="noreferrer">📄 Завантажити документ</a>
+            )}
+            {item.fileType === "video" && (
+              <a
+                className="video-card"
+                href={item.fileUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <img src={getVideoThumbnail(item.fileUrl)} alt={item.text} />
                 <span className="play-icon">▶️</span>
-              ) : (
-                <span className="play-icon">🔗</span>
-              )}
-            </a>
-          )}
-          <p>{item.text}</p>
-        </div>
-      ))}
+              </a>
+            )}
+            <p>{item.text}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }

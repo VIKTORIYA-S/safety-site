@@ -11,6 +11,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 // Замените на свои значения из Cloudinary (Dashboard → Settings → Upload)
 const CLOUD_NAME = "prwnb7wo";
@@ -67,12 +68,19 @@ async function uploadToCloudinary(file) {
 }
 
 function AdminUpload() {
+  const navigate = useNavigate();
+
+function handleLogout() {
+  sessionStorage.removeItem("admin_unlocked");
+  navigate("/");
+}
   const [section, setSection] = useState(SECTIONS[0].value);
   const [subpage, setSubpage] = useState(SUBPAGES[0].value);
   const [fileType, setFileType] = useState(FILE_TYPES[0].value);
   const [file, setFile] = useState(null);
   const [linkUrl, setLinkUrl] = useState("");
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  // const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [coverFile, setCoverFile] = useState(null);
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
@@ -142,15 +150,18 @@ function AdminUpload() {
       } else {
         if (!linkUrl) throw new Error("Вкажіть посилання");
         docData.linkUrl = linkUrl;
-        if (thumbnailUrl) docData.thumbnailUrl = thumbnailUrl;
+        // if (thumbnailUrl) docData.thumbnailUrl = thumbnailUrl;
       }
-
+      if (coverFile) {
+        docData.thumbnailUrl = await uploadToCloudinary(coverFile);
+      }
       await addDoc(collection(db, "materials"), docData);
 
       setMessage("✅ Матеріал успішно завантажено!");
       setFile(null);
+      setCoverFile(null);
       setLinkUrl("");
-      setThumbnailUrl("");
+      // setThumbnailUrl("");
       setText("");
       e.target.reset();
 
@@ -166,6 +177,7 @@ function AdminUpload() {
   return (
     <div className="admin-upload">
       <h2>Додати матеріал</h2>
+      <button type="button" onClick={handleLogout}>Вийти</button>
       <form onSubmit={handleSubmit}>
         <label>
           Розділ:
@@ -215,7 +227,7 @@ function AdminUpload() {
                 onChange={(e) => setLinkUrl(e.target.value)}
               />
             </label>
-            <label>
+            {/* <label>
               Картинка-превʼю (необовʼязково):
               <input
                 type="url"
@@ -223,10 +235,19 @@ function AdminUpload() {
                 value={thumbnailUrl}
                 onChange={(e) => setThumbnailUrl(e.target.value)}
               />
-            </label>
+            </label> */}
           </>
         )}
-
+  {fileType !== "image" && sectionInfo.hasSubpages && (
+  <label>
+    Обкладинка (картинка 16:9, необовʼязково):
+    <input
+      type="file"
+      accept="image/*"
+      onChange={(e) => setCoverFile(e.target.files[0])}
+    />
+  </label>
+)}
         <label>
           Текст / підпис:
           <input
