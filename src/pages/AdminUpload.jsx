@@ -10,7 +10,8 @@ import {
   getDocs,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
+import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
 // Замените на свои значения из Cloudinary (Dashboard → Settings → Upload)
@@ -70,10 +71,10 @@ async function uploadToCloudinary(file) {
 function AdminUpload() {
   const navigate = useNavigate();
 
-function handleLogout() {
-  sessionStorage.removeItem("admin_unlocked");
-  navigate("/");
-}
+async function handleLogout() {
+    await signOut(auth);
+    navigate("/");
+  }
   const [section, setSection] = useState(SECTIONS[0].value);
   const [subpage, setSubpage] = useState(SUBPAGES[0].value);
   const [fileType, setFileType] = useState(FILE_TYPES[0].value);

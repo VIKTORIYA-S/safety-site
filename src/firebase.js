@@ -7,13 +7,18 @@ import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 
 // Ваша конфигурация проекта (скопирована из консоли Firebase)
+// Import the functions you need from the SDKs you need
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDev8ZA5Bt1_9-KrN0Nt6TBZJ-Av28rdYA",
-  authDomain: "safety-site-63ffc.firebaseapp.com",
-  projectId: "safety-site-63ffc",
-  storageBucket: "safety-site-63ffc.firebasestorage.app",
-  messagingSenderId: "720100086275",
-  appId: "1:720100086275:web:7174f897cc9b528194f436"
+  apiKey: "AIzaSyDQxD1FmCQIP2hdvO2jrwABytlgr43X0Uc",
+  authDomain: "safety-site-2.firebaseapp.com",
+  projectId: "safety-site-2",
+  storageBucket: "safety-site-2.firebasestorage.app",
+  messagingSenderId: "183529339440",
+  appId: "1:183529339440:web:097f599c79cdcf07068bf5"
 };
 
 // Инициализируем сам Firebase-проект

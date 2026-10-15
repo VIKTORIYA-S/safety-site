@@ -47,7 +47,7 @@ p {
 
 .modal__block {
     width: 400px;
-    height: 235px;
+    padding-bottom: 50px;
     background: #bbb;
     border-radius: 25px;
     text-align: center;
@@ -67,7 +67,11 @@ p {
     font-size: 40px;
     padding-top: 20px;
     margin-left: 0;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
+}
+
+.parents__item__title.modal__title {
+    margin-bottom: 60px;
 }
 
 .input {
@@ -100,6 +104,7 @@ p {
         0px 12px 12px rgba(0, 0, 0, 0.25),
         0px 18px 18px rgba(0, 0, 0, 0.3);
     cursor: pointer;
+    margin: 0 auto;
 }
 
 .modal__button:hover {
