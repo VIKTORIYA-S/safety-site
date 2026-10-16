@@ -13,6 +13,7 @@ import {
 import { db, auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { TEACHER_FOLDERS } from "../data/teacherFolders";
 
 // Замените на свои значения из Cloudinary (Dashboard → Settings → Upload)
 const CLOUD_NAME = "prwnb7wo";
@@ -77,6 +78,7 @@ async function handleLogout() {
   }
   const [section, setSection] = useState(SECTIONS[0].value);
   const [subpage, setSubpage] = useState(SUBPAGES[0].value);
+  const [folder, setFolder] = useState(TEACHER_FOLDERS[0].value);
   const [fileType, setFileType] = useState(FILE_TYPES[0].value);
   const [file, setFile] = useState(null);
   const [linkUrl, setLinkUrl] = useState("");
@@ -143,6 +145,9 @@ async function handleLogout() {
 
       if (sectionInfo.hasSubpages) {
         docData.subpage = subpage;
+        if (subpage === "teachers") {
+          docData.folder = folder;
+        }
       }
 
       if (typeInfo.needsFile) {
@@ -195,6 +200,16 @@ async function handleLogout() {
             <select value={subpage} onChange={(e) => setSubpage(e.target.value)}>
               {SUBPAGES.map((s) => (
                 <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+          </label>
+        )}
+        {sectionInfo.hasSubpages && subpage === "teachers" && (
+          <label>
+            Папка:
+            <select value={folder} onChange={(e) => setFolder(e.target.value)}>
+              {TEACHER_FOLDERS.map((f) => (
+                <option key={f.value} value={f.value}>{f.label}</option>
               ))}
             </select>
           </label>
